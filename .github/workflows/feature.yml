@@ -1,9 +1,12 @@
-name: Production
+name: Feature
 on:
   workflow_dispatch:
   push:
-    tags:
-    - 'v*'
+    branches:
+    - feature/*
+  pull_request:
+    branches:
+    - develop
 jobs:
   lint:
     name: Lint
@@ -31,7 +34,7 @@ jobs:
     needs:
     - test
     with:
-      ENVIRONMENT: prod
+      ENVIRONMENT: feature
     secrets:
       USERNAME: ${{ secrets.DOCKER_USERNAME }}
       PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -41,9 +44,9 @@ jobs:
     needs:
     - docker
     with:
-      INGRESS_HOST: prod-${{github.sha}}.34.142.207.149.nip.io
-      NAMESPACE: production
-      ENVIRONMENT: prod
+      INGRESS_HOST: feature-${{github.sha}}.34.142.207.149.nip.io
+      NAMESPACE: feature-${{github.sha}}
+      ENVIRONMENT: feature
     secrets:
       PROJECT_ID: ${{ secrets.PROJECT_ID }}
       APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}

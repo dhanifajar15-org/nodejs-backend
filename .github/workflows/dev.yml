@@ -4,6 +4,9 @@ on:
   push:
     branches:
     - develop
+  pull_request:
+    branches:
+    - staging
 jobs:
   lint:
     name: Lint
@@ -41,7 +44,7 @@ jobs:
     needs:
     - docker
     with:
-      INGRESS_HOST: dev-nodejs-backend.dhani.cloud
+      INGRESS_HOST: dev-${{github.sha}}.34.142.207.149.nip.io
       NAMESPACE: development
       ENVIRONMENT: dev
     secrets:
