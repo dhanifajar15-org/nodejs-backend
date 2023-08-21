@@ -47,7 +47,7 @@ The CI/CD process involves the following steps for each branch:
 
 The CI/CD workflow is designed to be reusable, reducing duplication. It consists of multiple jobs, which can take inputs and use secrets.
 
-![image-20230821213435490](/assets/picture-1.png)
+![image-20230821213435490](/assets/picture-3.png)
 
 ### 3. Branching Strategy
 
@@ -61,7 +61,7 @@ The branching strategy consists of the following branches:
 
 For each branch, a dedicated CI/CD setup is created. This setup includes linting, testing, dockerization, and deployment jobs.
 
-![image-20230821213131407](./assets/picture-3.png)
+![image-20230821213131407](./assets/picture-1.png)
 
 ### 4. Wildcard DNS
 
