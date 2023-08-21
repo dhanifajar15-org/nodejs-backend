@@ -1,0 +1,62 @@
+name: Development
+on:
+  workflow_dispatch:
+  push:
+    tags:
+    - 'v*'
+jobs:
+  lint:
+    name: Lint
+    uses: ./.github/workflows/lint.yml
+  test:
+    name: Test
+    uses: ./.github/workflows/test.yml
+    needs:
+    - lint
+    secrets:
+      MONGODB_URL: ${{ secrets.MONGODB_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_ACCESS_EXPIRATION_MINUTES: ${{ secrets.JWT_ACCESS_EXPIRATION_MINUTES }}
+      JWT_REFRESH_EXPIRATION_DAYS: ${{ secrets.JWT_REFRESH_EXPIRATION_DAYS }}
+      JWT_RESET_PASSWORD_EXPIRATION_MINUTES: ${{ secrets.JWT_RESET_PASSWORD_EXPIRATION_MINUTES }}
+      JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: ${{ secrets.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+  docker:
+    name: Containerization
+    uses: ./.github/workflows/docker.yml
+    needs:
+    - test
+    with:
+      ENVIRONMENT: dev
+    secrets:
+      USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  deploy:
+    name: Deployment
+    uses: ./.github/workflows/deploy.yml
+    needs:
+    - docker
+    with:
+      INGRESS_HOST: dev-nodejs-backend.dhani.cloud
+      NAMESPACE: development
+      ENVIRONMENT: prod
+    secrets:
+      PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+      ZONE_NAME: ${{ secrets.ZONE_NAME }}
+      MONGODB_URL: ${{ secrets.MONGODB_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_ACCESS_EXPIRATION_MINUTES: ${{ secrets.JWT_ACCESS_EXPIRATION_MINUTES }}
+      JWT_REFRESH_EXPIRATION_DAYS: ${{ secrets.JWT_REFRESH_EXPIRATION_DAYS }}
+      JWT_RESET_PASSWORD_EXPIRATION_MINUTES: ${{ secrets.JWT_RESET_PASSWORD_EXPIRATION_MINUTES }}
+      JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: ${{ secrets.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
