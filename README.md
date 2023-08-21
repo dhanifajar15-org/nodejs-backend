@@ -1,6 +1,6 @@
-## Technical Test - Setup Node.js Backend using GitHub Actions and Deploy The Apps to GKE
+## Technical Test -  CI/CD and Kubernetes
 
-In this documentation, I will outline the Continuous Integration and Continuous Deployment (CI/CD) process for a Node.js backend application using GitHub Actions. This workflow employs GitHub-hosted runners to automate the build, test, dockerization, and deployment process for different branches of the repository. We'll also discuss the branching strategy and unique features of this setup.
+I will outline the Continuous Integration and Continuous Deployment (CI/CD) process for a Node.js backend application using GitHub Actions. This workflow employs GitHub-hosted runners to automate the build, test, dockerization, and deployment process for different branches of the repository. We'll also discuss the branching strategy and unique features of this setup.
 
 This documentation outlines the CI/CD process implemented for a Node.js backend application. GitHub Actions, with its Standard GitHub-hosted runners, is used to automate the entire process. The CI/CD workflow includes linting, testing, dockerization, and deployment to Google Kubernetes Engine (GKE).
 
@@ -47,7 +47,7 @@ The CI/CD process involves the following steps for each branch:
 
 The CI/CD workflow is designed to be reusable, reducing duplication. It consists of multiple jobs, which can take inputs and use secrets.
 
-![image-20230821213435490](./assets/image-20230821213435490.png)
+![image-20230821213435490](/assets/image-20230821213435490.png)
 
 ### 3. Branching Strategy
 
@@ -61,13 +61,13 @@ The branching strategy consists of the following branches:
 
 For each branch, a dedicated CI/CD setup is created. This setup includes linting, testing, dockerization, and deployment jobs.
 
-![image-20230821213131407](./assets/image-20230821213131407.png)
+![image-20230821213131407](/assets/image-20230821213131407.png)
 
 ### 4. Wildcard DNS
 
 A unique feature is the use of wildcard domains for different branches. This is achieved using `nip.io`. For example, a feature branch named `feature` with commit SHA `34.142.207.149` will have a domain like `feature-${{github.sha}}.34.142.207.149.nip.io`.
 
-![image-20230821212936760](./assets/image-20230821212936760.png)
+![image-20230821212936760](/assets/image-20230821212936760.png)
 
 This wildcard domain setup enables easy access to deployed branches for testing purposes.
 
