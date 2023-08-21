@@ -1,4 +1,4 @@
-## Technical Test - Setup Node.js Backend using GitHub Actions and Deploy The Apps to GKE
+## Technical Test - CI/CD and Kubernetes
 
 In this documentation, I will outline the Continuous Integration and Continuous Deployment (CI/CD) process for a Node.js backend application using GitHub Actions. This workflow employs GitHub-hosted runners to automate the build, test, dockerization, and deployment process for different branches of the repository. We'll also discuss the branching strategy and unique features of this setup.
 
@@ -32,7 +32,7 @@ The CI/CD process involves the following steps for each branch:
 
 4. **Deployment Job**
 
-   **All Deployment Job except Production **
+   **All Deployment Job except Production**
 
    - Deploys the Dockerized application to GKE.
    - Credentials stored in ConfigMap and passed as secret variables.
