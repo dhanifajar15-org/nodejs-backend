@@ -1,0 +1,66 @@
+name: Test
+on:
+  workflow_call:
+    secrets:
+      MONGODB_URL:
+        required: true
+      JWT_SECRET:
+        required: true
+      JWT_ACCESS_EXPIRATION_MINUTES:
+        required: true
+      JWT_REFRESH_EXPIRATION_DAYS:
+        required: true
+      JWT_RESET_PASSWORD_EXPIRATION_MINUTES:
+        required: true
+      JWT_VERIFY_EMAIL_EXPIRATION_MINUTES:
+        required: true
+      SMTP_HOST:
+        required: true
+      SMTP_PORT:
+        required: true
+      SMTP_USERNAME:
+        required: true
+      SMTP_PASSWORD:
+        required: true
+      EMAIL_FROM:
+        required: true
+jobs:
+  #---------------------------------------------------------------------------------------------------------------------
+  # Test
+  #---------------------------------------------------------------------------------------------------------------------
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version:
+        - 16
+        os:
+        - ubuntu-latest
+    steps:
+      - name: Prepare
+        uses: actions/checkout@v3
+      - name: Set Up Node JS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.java-version }}
+      - name: Set up environment
+        run: |
+          echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" > .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "JWT_ACCESS_EXPIRATION_MINUTES=${{ secrets.JWT_ACCESS_EXPIRATION_MINUTES }}" >> .env
+          echo "JWT_REFRESH_EXPIRATION_DAYS=${{ secrets.JWT_REFRESH_EXPIRATION_DAYS }}" >> .env
+          echo "JWT_RESET_PASSWORD_EXPIRATION_MINUTES=${{ secrets.JWT_RESET_PASSWORD_EXPIRATION_MINUTES }}" >> .env
+          echo "JWT_VERIFY_EMAIL_EXPIRATION_MINUTES=${{ secrets.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES }}" >> .env
+          echo "SMTP_HOST=${{ secrets.SMTP_HOST }}" >> .env
+          echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env
+          echo "SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}" >> .env
+          echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
+          echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
+      - name: Install Packages
+        run: yarn install --pure-lockfile
+      - name: Run all tests
+        run: yarn test
+      - name: Run test coverage
+        run: yarn coverage
+

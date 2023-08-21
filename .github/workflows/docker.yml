@@ -1,0 +1,44 @@
+name: Docker
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        type: string
+        required: true
+    secrets:
+      USERNAME:
+        required: true
+      PASSWORD:
+        required: true
+jobs:
+  docker:
+    name: Docker
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+    steps:
+    - name: Prepare
+      uses: actions/checkout@v2
+    - name: Login to Registry
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+    - name: Tags
+      id: tags
+      run: |
+        echo ::set-output name=sha_short::$(git rev-parse --short=7 ${{ github.sha }})
+    - name: Build
+      run: >-
+        docker
+        build
+        -t dhanifajar15/nodejs-backend:${{ inputs.ENVIRONMENT }}-sha-${{ steps.tags.outputs.sha_short }}
+        -f docker/Dockerfile
+        .
+    - name: Push ${{ inputs.ENVIRONMENT }}-sha-${{ steps.tags.outputs.sha_short }}
+      run: >-
+        docker
+        push
+        dhanifajar15/nodejs-backend:${{ inputs.ENVIRONMENT }}-sha-${{ steps.tags.outputs.sha_short }}

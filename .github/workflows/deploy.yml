@@ -1,0 +1,89 @@
+name: Deploy
+on:
+  workflow_call:
+    inputs:
+      INGRESS_HOST:
+        type: string
+        required: true
+      NAMESPACE:
+        type: string
+        required: true
+      ENVIRONMENT:
+        type: string
+        required: true
+    secrets:
+      PROJECT_ID:
+        required: true
+      APPLICATION_CREDENTIALS:
+        required: true
+      CLUSTER_NAME:
+        required: true
+      ZONE_NAME:
+        required: true
+      MONGODB_URL:
+        required: true
+      JWT_SECRET:
+        required: true
+      JWT_ACCESS_EXPIRATION_MINUTES:
+        required: true
+      JWT_REFRESH_EXPIRATION_DAYS:
+        required: true
+      JWT_RESET_PASSWORD_EXPIRATION_MINUTES:
+        required: true
+      JWT_VERIFY_EMAIL_EXPIRATION_MINUTES:
+        required: true
+      SMTP_HOST:
+        required: true
+      SMTP_PORT:
+        required: true
+      SMTP_USERNAME:
+        required: true
+      SMTP_PASSWORD:
+        required: true
+      EMAIL_FROM:
+        required: true
+jobs:
+  #---------------------------------------------------------------------------------------------------------------------
+  # Deploy
+  #---------------------------------------------------------------------------------------------------------------------
+  deploy:
+    name: Deployment
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+    # Set Docker Tag
+    - name: Get Docker Tag
+      id: tags
+      run: |
+        echo ::set-output name=sha_short::$(git rev-parse --short=7 ${{ github.sha }})
+    # Setup application manifest
+    - uses: danielr1996/envsubst-action@1.0.0
+      env:
+        IMAGE_TAG: ${{ inputs.ENVIRONMENT }}-sha-${{ steps.tags.outputs.sha_short }}
+        INGRESS_HOST: ${{ inputs.INGRESS_HOST }}
+        NAMESPACE: ${{ inputs.NAMESPACE }}
+#env
+        MONGODB_URL: ${{ secrets.MONGODB_URL }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        JWT_ACCESS_EXPIRATION_MINUTES: ${{ secrets.JWT_ACCESS_EXPIRATION_MINUTES }}
+        JWT_REFRESH_EXPIRATION_DAYS: ${{ secrets.JWT_REFRESH_EXPIRATION_DAYS }}
+        JWT_RESET_PASSWORD_EXPIRATION_MINUTES: ${{ secrets.JWT_RESET_PASSWORD_EXPIRATION_MINUTES }}
+        JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: ${{ secrets.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES }}
+        SMTP_HOST: ${{ secrets.SMTP_HOST }}
+        SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+      with:
+        input: deployment/deployment.yaml
+        output: manifest.yaml
+    - name: kubectl - Google Cloud GKE cluster.
+      uses: ameydev/gke-kubectl-action@master
+      env:
+        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        APPLICATION_CREDENTIALS: ${{ secrets.APPLICATION_CREDENTIALS }}
+        CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+        ZONE_NAME: ${{ secrets.ZONE_NAME }}
+      with:
+        args: apply -f manifest.yaml

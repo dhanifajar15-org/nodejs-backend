@@ -1,0 +1,34 @@
+name: Lint
+on:
+  workflow_call:
+jobs:
+  #---------------------------------------------------------------------------------------------------------------------
+  # Lint
+  #---------------------------------------------------------------------------------------------------------------------
+  lint:
+    name: Lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version:
+        - 16
+        os:
+        - ubuntu-latest
+    steps:
+      - name: Prepare
+        uses: actions/checkout@v3
+      - name: Set Up Node JS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.java-version }}
+      - name: Install Packages
+        run: yarn install --pure-lockfile
+      - name: Run ESLint
+        run: yarn lint
+      - name: Fix ESLint errors
+        run: yarn lint:fix
+      - name: Run Prettier
+        run: yarn prettier
+      - name: Fix prettier errors
+        run: yarn prettier:fix
+
