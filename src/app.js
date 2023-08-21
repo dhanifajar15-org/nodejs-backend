@@ -65,6 +65,3 @@ app.use(errorConverter);
 app.use(errorHandler);
 
 module.exports = app;
-
-
-//app.use('/v1/healthcheck', require('./routes/v1/health'));
